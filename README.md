@@ -41,7 +41,7 @@ Turn off caps lock to use options:
 
 > ```s``` : change save image in folder ```Output```
 
-# Chỉnh sửa trực tiếp trên ảnh - Run with your image
+# Chỉnh sửa trực tiếp trên ảnh - Edit your image
 
 Edit  ``` path_input``` in file app_image.py
 
