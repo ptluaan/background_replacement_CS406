@@ -26,10 +26,10 @@ class background_replacement_mediapipe:
 
         mask_img_inv = cv2.bitwise_not(mask_img)
         
-        fg = cv2.bitwise_and(frame, frame, mask= mask_img)
-        bg = cv2.bitwise_and(bg_image, bg_image, mask= mask_img_inv)
+        foreground = cv2.bitwise_and(frame, frame, mask= mask_img)
+        background = cv2.bitwise_and(bg_image, bg_image, mask= mask_img_inv)
         
-        output_image = cv2.add(fg, bg)
+        output_image = cv2.add(foreground, background)
 
         return mask_img, output_image
 
@@ -63,7 +63,7 @@ class background_replacement_contours :
         edges = cv2.dilate(edges, None)
         edges = cv2.erode(edges, None)
 
-        contour_info = [(c, cv2.contourArea(c),) for c in cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]]
+        contours_info = [(c, cv2.contourArea(c),) for c in cv2.findContours(edges, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)[0]]
    
         image_area = frame.shape[0] * frame.shape[1]  
 
@@ -72,7 +72,7 @@ class background_replacement_contours :
 
         mask = np.zeros(edges.shape, dtype = np.uint8)
 
-        for contour in contour_info:
+        for contour in contours_info:
            if contour[1] > min_area and contour[1] < max_area:
                 mask = cv2.fillConvexPoly(mask, contour[0], (255))
 
@@ -83,10 +83,10 @@ class background_replacement_contours :
         mask[mask>0] = 255
         mask_inv = cv2.bitwise_not(mask)
 
-        fg_imgae = cv2.bitwise_and(frame, frame, mask= mask)
-        bg_image = cv2.bitwise_and(bg_image, bg_image, mask= mask_inv)
+        foreground = cv2.bitwise_and(frame, frame, mask= mask)
+        background = cv2.bitwise_and(bg_image, bg_image, mask= mask_inv)
 
-        output_image = cv2.add(fg_imgae, bg_image)
+        output_image = cv2.add(foreground, background)
         
         return mask, output_image
 
@@ -122,9 +122,9 @@ class background_replacement_subtract :
 		mask[mask>0]=255
 		mask_inv = cv2.bitwise_not(mask)
 	
-		fgimg = cv2.bitwise_and(img,img,mask = mask)
-		bgimg = cv2.bitwise_and(bg,bg,mask = mask_inv)
+		foreground = cv2.bitwise_and(img,img,mask = mask)
+		background = cv2.bitwise_and(bg,bg,mask = mask_inv)
 		
-		output_image = cv2.add(bgimg,fgimg)
-		return mask,output_image
+		output_image = cv2.add(foreground, background)
+		return mask, output_image
 

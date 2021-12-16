@@ -2,38 +2,35 @@ from mediapipe.python import solutions
 from background_replacement import *
 import os
 
+# Enter image path in here
 path_input     = './input/b.png' 
-path_ref_input = './input/b.png' 
-# path_input     = 'dog.jpg' 
-# path_ref_input = 'dog.jpg' 
+path_input_model = './input/b.png' 
  
-
-input     = cv2.imread(path_input)
-ref_input = cv2.imread(path_ref_input)
+input = cv2.imread(path_input)
+input_model = cv2.imread(path_input_model)
 
 solution = 0
 
-flag_mediapipe = False
-flag_contours  = False
-flag_subtract  = False
+mediapipe_visible = False
+contours_visible  = False
+subtract_visible  = False
+mask_visible      = False
 
 flag_flip = False
 
-flag_mask = False
+background_path = 'images'
+backgrounds = os.listdir(background_path)
 
-image_path = 'images'
-images = os.listdir(image_path)
-
-image_index= 0
-bg_image = cv2.imread(image_path+'/'+images[image_index])
+background_index = 0
+background = cv2.imread(background_path+'/'+backgrounds[background_index])
 
 def nothing(x):
     pass
 
 # create solutions
-br_mediapipe = background_replacement_mediapipe()
-br_contours  = background_replacement_contours()
-br_subtract  = background_replacement_subtract()
+_mediapipe = background_replacement_mediapipe()
+_contours  = background_replacement_contours()
+_subtract  = background_replacement_subtract()
 
 # setting panel
 cv2.namedWindow('Panel')
@@ -43,60 +40,60 @@ def panel_mediapipe():
     cv2.destroyWindow('Panel')
     cv2.namedWindow('Panel')
 
-    cv2.createTrackbar('Threshold'  ,'Panel',0,200, nothing)
-    cv2.createTrackbar('Portrait'   ,'Panel',0,50, nothing)
+    cv2.createTrackbar('Threshold','Panel',0,100,nothing)
+    cv2.createTrackbar('Portrait' ,'Panel',0,50 ,nothing)
 
 # Pannel for background_replacement_contours
 def panel_contours():
     cv2.destroyWindow('Panel')
     cv2.namedWindow('Panel',cv2.WINDOW_NORMAL)
 
-    cv2.createTrackbar('Portrait'   ,'Panel',0,50, nothing)
-    cv2.createTrackbar('Blur'       ,'Panel',0,25, nothing)
-    cv2.createTrackbar('Min area'   ,'Panel',0,700, nothing)
-    cv2.createTrackbar('Max area'   ,'Panel',0,1000, nothing)
-    cv2.createTrackbar('Canny low'  ,'Panel',1,250, nothing)
-    cv2.createTrackbar('Canny high' ,'Panel',1,250, nothing)
-    cv2.createTrackbar('Dilate iter','Panel',1,15, nothing)
-    cv2.createTrackbar('Erode iter' ,'Panel',1,15, nothing)
+    cv2.createTrackbar('Portrait'   ,'Panel',0,50  ,nothing)
+    cv2.createTrackbar('Blur'       ,'Panel',0,25  ,nothing)
+    cv2.createTrackbar('Min area'   ,'Panel',0,700 ,nothing)
+    cv2.createTrackbar('Max area'   ,'Panel',1,1000,nothing)
+    cv2.createTrackbar('Canny low'  ,'Panel',1,250 ,nothing)
+    cv2.createTrackbar('Canny high' ,'Panel',1,250 ,nothing)
+    cv2.createTrackbar('Dilate iter','Panel',1,15  ,nothing)
+    cv2.createTrackbar('Erode iter' ,'Panel',1,15  ,nothing)
 
 # Pannel for background_replacement_subtract
 def panel_subtract():
     cv2.destroyWindow('Panel')
     cv2.namedWindow('Panel')
 
-    cv2.createTrackbar('Threshold chanel','Panel',1,255, nothing)
-    cv2.createTrackbar('Threshold gray'  ,'Panel',1,255, nothing)
-    cv2.createTrackbar('Blur'            ,'Panel',0,20, nothing)
-    cv2.createTrackbar('Portrait'        ,'Panel',0,50, nothing)
+    cv2.createTrackbar('Threshold chanel','Panel',0,255,nothing)
+    cv2.createTrackbar('Threshold gray'  ,'Panel',0,255,nothing)
+    cv2.createTrackbar('Blur'            ,'Panel',0,50 ,nothing)
+    cv2.createTrackbar('Portrait'        ,'Panel',0,50 ,nothing)
 
 def mediapipe_handle(frame, background) :
-    global flag_mediapipe, flag_contours, flag_subtract, flag_flip
+    global mediapipe_visible, contours_visible, subtract_visible, flag_flip
 
-    if not flag_mediapipe : panel_mediapipe()
+    if not mediapipe_visible : panel_mediapipe()
 
-    flag_mediapipe = True
-    flag_contours  = False
-    flag_subtract  = False
+    mediapipe_visible = True
+    contours_visible  = False
+    subtract_visible  = False
 
     threshold = cv2.getTrackbarPos('Threshold','Panel') / 100.0
     portrait  = cv2.getTrackbarPos('Portrait' ,'Panel') * 2 + 1
 
-    br_mediapipe.set_parameters(threshold)
-    if  (portrait > 1):
-        bg = cv2.GaussianBlur(frame, (portrait,portrait),0)
-    else:
-        bg = background
-    return br_mediapipe.solution(frame, bg)
+    _mediapipe.set_parameters(threshold)
+
+    if portrait > 1:
+        background = cv2.GaussianBlur(frame, (portrait,portrait),0)
+
+    return _mediapipe.solution(frame, background)
 
 def contours_handle(frame, background) :
-    global flag_mediapipe, flag_contours, flag_subtract, flag_flip
+    global mediapipe_visible, contours_visible, subtract_visible, flag_flip
 
-    if not flag_contours : panel_contours()
+    if not contours_visible : panel_contours()
 
-    flag_contours  = True
-    flag_mediapipe = False
-    flag_subtract  = False
+    contours_visible  = True
+    mediapipe_visible = False
+    subtract_visible  = False
 
     blur        = cv2.getTrackbarPos('Blur'       ,'Panel') * 2 + 1
     canny_low   = cv2.getTrackbarPos('Canny low'  ,'Panel')
@@ -107,56 +104,58 @@ def contours_handle(frame, background) :
     erode_iter  = cv2.getTrackbarPos('Erode iter' ,'Panel')
     portrait    = cv2.getTrackbarPos('Portrait'   ,'Panel') * 2 + 1
 
-    br_contours.set_parameters(blur,canny_low,canny_high,min_area, max_area, dilate_iter, erode_iter)
+    _contours.set_parameters(blur,canny_low,canny_high,min_area, max_area, dilate_iter, erode_iter)
+   
+    if portrait > 1:
+        background = cv2.GaussianBlur(frame, (portrait,portrait),0)
+
+    return _contours.solution(frame, background)
+
+def subtract_handle(frame, frame_model, background) :
+    global mediapipe_visible, contours_visible, subtract_visible, flag_flip
+
+    if not subtract_visible : panel_subtract()
+
+    subtract_visible  = True
+    mediapipe_visible = False
+    contours_visible  = False
     
-    if  (portrait > 1):
-        bg = cv2.GaussianBlur(frame, (portrait,portrait),0)
-    else:
-        bg = background
-    return br_contours.solution(frame, bg)
-
-def subtract_handle(frame, ref_frame, background) :
-    global flag_mediapipe, flag_contours, flag_subtract, flag_flip
-
-    if not flag_subtract : panel_subtract()
-
-    flag_subtract  = True
-    flag_mediapipe = False
-    flag_contours  = False
-
     threshold_chanel = cv2.getTrackbarPos('Threshold chanel','Panel')
     threshold_gray   = cv2.getTrackbarPos('Threshold gray'  ,'Panel')
     blur             = cv2.getTrackbarPos('Blur'            ,'Panel') * 2 + 1
     portrait 		 = cv2.getTrackbarPos('Portrait'        ,'Panel') * 2 + 1
 
-    br_subtract.set_parameters(threshold_chanel, threshold_gray, blur)
+    _subtract.set_parameters(threshold_chanel, threshold_gray, blur)
 
     if  (portrait > 1):
-        bg = cv2.GaussianBlur(frame, (portrait,portrait),0)
-    else:
-        bg = background
+        background = cv2.GaussianBlur(frame, (portrait,portrait),0)
 
-    return br_subtract.solution(frame, ref_frame, bg)
+    return _subtract.solution(frame, frame_model, background)
+
+def save_output():
+    out_path = 'Output'
+    out = os.listdir(out_path)
+    name_out = str(len(out)) 
+    cv2.imwrite(out_path +"/" + name_out + ".jpg",output)
 
 while True:
-    # try :
     key = cv2.waitKey(1) & 0xFF
     
-    frame     = input
-    ref_frame = ref_input
-
-    if  key == ord('f') :
+    frame = input
+    frame_model = input_model
+    
+    if  key == ord('f'):
         flag_flip ^= True
     
-    if (flag_flip) :
+    if flag_flip:
         frame = cv2.flip(frame,1)
 
-    if   key == ord('q') or key == 27:
+    if key == ord('q') or key == 27:
         break
     
     elif key == ord('d'):
-        image_index = (image_index + 1) % len(images)
-        bg_image = cv2.imread(image_path+'/'+images[image_index])
+        background_index = (background_index + 1) % len(backgrounds)
+        background = cv2.imread(background_path+'/'+backgrounds[background_index])
 
     elif key == ord('1'):
         solution = 0
@@ -166,28 +165,23 @@ while True:
         solution = 2
 
     if   0 == solution :
-        mask, output = mediapipe_handle(frame, bg_image)
+        mask, output = mediapipe_handle(frame, background)
     elif 1 == solution :
-        mask, output = contours_handle(frame, bg_image)
+        mask, output = contours_handle(frame, background)
     else :
-        mask, output = subtract_handle(frame, ref_frame, bg_image)
+        mask, output = subtract_handle(frame, frame_model, background)
     
     if key == ord('m'):
-        if flag_mask :
-            cv2.destroyWindow('mask')
-        flag_mask ^= True
+        if mask_visible :
+            cv2.destroyWindow('Mask')
+        mask_visible ^= True
 
-    if flag_mask :
-        cv2.imshow('mask',mask)
-   
+    if mask_visible :
+        cv2.imshow('Mask',mask)
+    
     cv2.imshow("Output", output)
-
-    if ord('s') == key:
-        out_path = 'Output'
-        out = os.listdir(out_path)
-        name_out = str(len(out)) 
-        cv2.imwrite(out_path +"/" + name_out + ".jpg",output)
-    # except :
-    #     pass
+    
+    if key == ord('s'):
+        save_output()
 
 cv2.destroyAllWindows()
