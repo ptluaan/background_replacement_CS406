@@ -4,15 +4,49 @@
 <!-- Badge -->
 ![Language](https://img.shields.io/badge/python%203.8-%23FFF.svg?style=for-the-badge&logo=python)
 
-#How to use?
+# Các thư viện sử dụng - Library:
+
+* ```mediapipe```
+* ```opencv```
+* ```numpy```
+* ```os```
+
+# 
 ```
-from background_replacement import *
+git clone https://github.com/cavangcoder/background_replacement_CS406.git
 ```
-or
+
+# Dùng trên máy ảnh của thiết bị - Run with camera realtime
 ```
-from background_replacement import background_replacement_mediapipe
-from background_replacement import background_replacement_contours
-from background_replacement import background_replacement_subtract
+python3 app_camera.py
+```
+
+Turn off caps lock to use options:
+
+> ```f``` : flip or not flip frame
+
+> ```q```  or  ```Esc```: turn off program
+
+> ```d``` : change background
+
+> ```1``` : use ```background_replacement_mediapipe```
+
+> ```2``` : use ```background_replacement_contours```
+
+> ```3``` : use ```background_replacement_subtract```
+
+> ```p``` : set ```frame_model = frame``` for ```background_replacement_subtract```
+
+> ```m``` : appear / disappear ```mask```
+
+> ```s``` : change save image in folder ```Output```
+
+# Chỉnh sửa trực tiếp trên ảnh - Run with your image
+
+Edit  ``` path_input``` in file app_image.py
+
+```
+python3 app_camera.py
 ```
 
 
