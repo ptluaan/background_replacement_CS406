@@ -4,6 +4,18 @@
 <!-- Badge -->
 ![Language](https://img.shields.io/badge/python%203.8-%23FFF.svg?style=for-the-badge&logo=python)
 
+#How to use?
+```
+from background_replacement import *
+```
+or
+```
+from background_replacement import background_replacement_mediapipe
+from background_replacement import background_replacement_contours
+from background_replacement import background_replacement_subtract
+```
+
+
 # Thông tin Thành viên -  Member
 | Name      | Email                  | Github                                                                                                                      |
 | --------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
