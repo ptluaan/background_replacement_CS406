@@ -2,8 +2,11 @@ from mediapipe.python import solutions
 from background_replacement import *
 import os
 
-path_input     = 'images/md.jpg' 
-path_ref_input = 'images/md.jpg' 
+path_input     = './input/b.png' 
+path_ref_input = './input/b.png' 
+# path_input     = 'dog.jpg' 
+# path_ref_input = 'dog.jpg' 
+ 
 
 input     = cv2.imread(path_input)
 ref_input = cv2.imread(path_ref_input)
