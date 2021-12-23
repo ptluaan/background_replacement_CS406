@@ -4,10 +4,10 @@
 <!-- Badge -->
 ![Language](https://img.shields.io/badge/python%203.8-%23FFF.svg?style=for-the-badge&logo=python)
 
-# Các thư viện sử dụng - Library:
+# Requirements
 
 * ```mediapipe```
-* ```opencv```
+* ```opencv 4.5.4+```
 * ```numpy```
 * ```os```
 
@@ -16,7 +16,7 @@
 git clone https://github.com/cavangcoder/background_replacement_CS406.git
 ```
 
-# Dùng trên máy ảnh của thiết bị - Run with camera realtime
+# Run with camera realtime
 ```
 python3 app_camera.py
 ```
@@ -41,7 +41,7 @@ Turn off caps lock to use options:
 
 > ```s``` : change save image in folder ```Output```
 
-# Chỉnh sửa trực tiếp trên ảnh - Edit your image
+# Edit your image
 
 Edit  ``` path_input``` in file app_image.py
 
@@ -50,7 +50,7 @@ python3 app_camera.py
 ```
 
 
-# Thông tin Thành viên -  Member
+# Member
 | Name      | Email                  | Github                                                                                                                      |
 | --------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Phạm Thành Luân | 19520154@gm.uit.edu.vn | [![](https://img.shields.io/badge/cavangcoder-%2324292f.svg?style=flat-square&logo=github)](https://github.com/cavangcoder) |
